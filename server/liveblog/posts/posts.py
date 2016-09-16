@@ -13,6 +13,11 @@ from superdesk.utc import utcnow
 from superdesk.users.services import current_user_has_privilege
 from superdesk.errors import SuperdeskApiError
 from liveblog.common import check_comment_length
+import logging
+
+
+logger = logging.getLogger('superdesk')
+
 
 DEFAULT_POSTS_ORDER = [('order', -1), ('firstcreated', -1)]
 
@@ -165,7 +170,7 @@ class PostsService(ArchiveService):
             if doc['post_status'] == 'open':
                 doc['published_date'] = utcnow()
                 doc['content_updated_date'] = utcnow()
-                doc['publisher'] = getattr(flask.g, 'user', None)
+                doc['publisher'] = {'_id': getattr(flask.g, 'user', None).get('_id')}
         super().on_create(docs)
 
     def on_created(self, docs):
@@ -213,7 +218,7 @@ class PostsService(ArchiveService):
             updates['order'] = self.get_next_order_sequence(original.get('blog'))
             # if you publish a post it will save a published date and register who did it
             updates['published_date'] = utcnow()
-            updates['publisher'] = getattr(flask.g, 'user', None)
+            updates['publisher'] = {'_id': getattr(flask.g, 'user', None).get('_id')}
         # when unpublishing
         if original.get('post_status') == 'open' and updates.get('post_status') != 'open':
             updates['unpublished_date'] = utcnow()
