@@ -179,6 +179,7 @@ class PostsService(ArchiveService):
         push_notification('posts', created=True, post_status=doc['post_status'], post_ids=post_ids)
 
     def on_update(self, updates, original):
+        # in this version we're gonna try to see how type checkup works
         # check if the timeline is reordered
         if updates.get('order'):
             blog = get_resource_service('blogs').find_one(req=None, _id=original['blog'])
