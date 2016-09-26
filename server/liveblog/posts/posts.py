@@ -127,6 +127,8 @@ class PostsService(ArchiveService):
             upsert=False)
         if blog:
             order = blog and blog.get('posts_order_sequence') or None
+            if type(order) is int:
+                order = float(order)
             # support previous LB version when the sequence was not save into the blog
             if order is None:
                 # find the highest order in the blog
@@ -182,6 +184,8 @@ class PostsService(ArchiveService):
         # in this version we're gonna try to see how type checkup works
         # check if the timeline is reordered
         if updates.get('order'):
+            if type(updates['order']) is int:
+                updates['order'] = float(updates['order'])
             blog = get_resource_service('blogs').find_one(req=None, _id=original['blog'])
             if blog['posts_order_sequence'] == updates['order']:
                 blog['posts_order_sequence'] = self.get_next_order_sequence(original.get('blog'))

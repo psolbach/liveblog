@@ -138,6 +138,8 @@ class BlogService(BaseService):
 
     def on_create(self, docs):
         for doc in docs:
+            if type(doc['posts_order_sequence']) is int:
+                doc['posts_order_sequence'] = float(doc.get('posts_order_sequence'))
             update_dates_for(doc)
             doc['original_creator'] = str(get_user().get('_id'))
             # set the blog_preferences by merging given preferences with global_prefs
