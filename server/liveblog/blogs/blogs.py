@@ -116,6 +116,7 @@ def publish_blog_embed_on_s3(blog_id, safe=True):
     if blog['blog_preferences'].get('theme', False):
         try:
             public_url = liveblog.embed.publish_embed(blog_id, '//%s/' % (app.config['SERVER_NAME']))
+            print('pppppp', public_url)
             get_resource_service('blogs').system_update(blog['_id'], {'public_url': public_url}, blog)
             push_notification('blog', published=1, blog_id=str(blog.get('_id')), public_url=public_url)
             return public_url
@@ -139,7 +140,9 @@ class BlogService(BaseService):
     def on_create(self, docs):
         for doc in docs:
             if type(doc['posts_order_sequence']) is int:
+                print('post order sequence is int:(', doc['posts_order_sequence'])
                 doc['posts_order_sequence'] = float(doc.get('posts_order_sequence'))
+                print('post order sequence after converted to float:(', doc['posts_order_sequence'])
             update_dates_for(doc)
             doc['original_creator'] = str(get_user().get('_id'))
             # set the blog_preferences by merging given preferences with global_prefs

@@ -119,11 +119,11 @@ class PostsService(ArchiveService):
 
     def get_next_order_sequence(self, blog_id):
         if blog_id is None:
-            return 0.00
+            return 0
         # get next order sequence and increment it
         blog = get_resource_service('blogs').find_and_modify(
             query={'_id': blog_id},
-            update={'$inc': {'posts_order_sequence': 1}},
+            update={'$inc': {'posts_order_sequence': 1.00}},
             upsert=False)
         if blog:
             order = blog and blog.get('posts_order_sequence') or None
@@ -137,9 +137,9 @@ class PostsService(ArchiveService):
                 req.max_results = 1
                 post = next(self.get_from_mongo(req=req, lookup={'blog': blog_id}), None)
                 if post and post.get('order') is not None:
-                    order = post.get('order') + 1
+                    order = post.get('order') + 1.00
                     # save the order into the blog
-                    get_resource_service('blogs').update(blog_id, {'posts_order_sequence': order + 1}, blog)
+                    get_resource_service('blogs').update(blog_id, {'posts_order_sequence': order + 1.00}, blog)
                 else:
                     order = 0.00
         else:
@@ -184,8 +184,6 @@ class PostsService(ArchiveService):
         # in this version we're gonna try to see how type checkup works
         # check if the timeline is reordered
         if updates.get('order'):
-            if type(updates['order']) is int:
-                updates['order'] = float(updates['order'])
             blog = get_resource_service('blogs').find_one(req=None, _id=original['blog'])
             if blog['posts_order_sequence'] == updates['order']:
                 blog['posts_order_sequence'] = self.get_next_order_sequence(original.get('blog'))

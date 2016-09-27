@@ -75,6 +75,7 @@ def check_media_storage():
 
 
 def publish_embed(blog_id, api_host=None, theme=None):
+    print('aaaaa', api_host)
     html = embed(blog_id, api_host, theme)
     check_media_storage()
     file_path = get_file_path(blog_id)
